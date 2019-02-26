@@ -121,7 +121,7 @@ class MCTS:
 
         child_node_id = leaf_node_id  # default value
 
-        if winner[0] == 'CONTINUE':
+        if winner[0] == 'CONTINUE' and len(possible_actions) != 0:
             '''
             when leaf state is not terminal state
             '''
@@ -473,8 +473,8 @@ def gameplay(obj2):  # game simulator
     signal.signal(signal.SIGALRM, handler)
     while(1):
         # player 1 turn
-        obj1 = MCTS(n_iterations=1500, depth=162,
-                    exploration_constant=100, game_board=game_board, player='x')
+        obj1 = MCTS(n_iterations=3000, depth=162,
+                    exploration_constant=10, game_board=game_board, player='x')
         p1_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(
             game_board, old_move, obj1, "P1", "P2", fl1)
         print "p1_move " + str(p1_move)
@@ -485,8 +485,8 @@ def gameplay(obj2):  # game simulator
         game_board.print_board()
 
         if small_board_won:
-            obj1 = MCTS(n_iterations=1500, depth=162,
-                        exploration_constant=100, game_board=game_board, player='x')
+            obj1 = MCTS(n_iterations=3000, depth=162,
+                        exploration_constant=10, game_board=game_board, player='x')
             p1_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(
                 game_board, old_move, obj1, "P1", "P2", fl1)
             print "smallboard win p1_move " + str(p1_move)
@@ -496,9 +496,11 @@ def gameplay(obj2):  # game simulator
             old_move = p1_move
             game_board.print_board()
 
-        # do the same thing for player 2
+		# Player 2
+        obj1_1 = MCTS(n_iterations=3000, depth=162,
+                              exploration_constant=10, game_board=game_board, player='x')
         p2_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(
-            game_board, old_move, obj2, "P2", "P1", fl2)
+            game_board, old_move, obj1_1, "P2", "P1", fl2)
 
         if to_break:
             break
@@ -507,14 +509,16 @@ def gameplay(obj2):  # game simulator
         old_move = p2_move
 
         if small_board_won:
-            p2_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(
-                game_board, old_move, obj2, "P2", "P1", fl2)
+			obj1_1 = MCTS(n_iterations=3000, depth=162,
+			              exploration_constant=10, game_board=game_board, player='x')
+			p2_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(
+			    game_board, old_move, obj1_1, "P2", "P1", fl2)
 
-            if to_break:
-                break
+			if to_break:
+				break
 
-            old_move = p2_move
-            game_board.print_board()
+			old_move = p2_move
+			game_board.print_board()
 
     game_board.print_board()
 

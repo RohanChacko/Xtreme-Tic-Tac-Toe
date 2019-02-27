@@ -370,7 +370,7 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = Manual_Player()
 	elif option == '3':
-		obj1 = Random_Player()
+		obj1 = MinimaxAgent('x')
 		obj2 = MinimaxAgent('o')
 		# obj1 = Manual_Player()
 		# obj2 = Manual_Player()

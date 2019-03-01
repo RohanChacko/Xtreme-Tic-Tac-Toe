@@ -379,8 +379,8 @@ if __name__ == '__main__':
 	elif option == '3':
 		# obj1 = Random_Player()
 		obj1 = MinimaxAgent('x')
-		# obj2 = MinimaxAgent('o')
-		obj2 = Random_Player()
+		obj2 = MinimaxAgent('o')
+		# obj2 = Random_Player()
 
 	elif option == '4':
 		obj1 = MinimaxAgent()

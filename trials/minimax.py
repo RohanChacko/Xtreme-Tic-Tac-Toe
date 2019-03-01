@@ -6,7 +6,7 @@ import time
 class MinimaxAgent(object):
     def __init__(self, player):
         self.player         = player
-        self.MAX_DEPTH      = 2
+        self.MAX_DEPTH      = 3
         self.INIT_ALPHA     = -1*sys.maxint
         self.INIT_BETA      = sys.maxint
         self.board          = None
@@ -22,7 +22,7 @@ class MinimaxAgent(object):
                 [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
 
                 [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
-                [10,  8,  0,     6,  0,  6,      0,  8, 10,],
+                [10,  8,  0,     0,  0,  0,      0,  8, 10,],
                 [10, 10,  0,     6,  0,  6,      0, 10, 10,],
             ],
             [
@@ -35,8 +35,21 @@ class MinimaxAgent(object):
                 [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
 
                 [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
-                [10,  8,  0,     6,  0,  6,      0,  8, 10,],
+                [10,  8,  0,     0,  0,  0,      0,  8, 10,],
                 [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+            ],
+        ]
+
+        self.small_board_status_weights = [
+            [
+                [20, 15, 20,],
+                [15, 15, 15,],
+                [20, 15, 20,],
+            ],
+            [
+                [20, 15, 20,],
+                [15, 15, 15,],
+                [20, 15, 20,],
             ]
         ]
 
@@ -176,7 +189,7 @@ class MinimaxAgent(object):
             for i in range(3):
                 for j in range(3):
                     if self.board.small_boards_status[k][i][j] == self.player:
-                        state_score += 20
+                        state_score += self.small_board_status_weights[k][i][j]
 
         #################################### Heuristic C ####################################
 

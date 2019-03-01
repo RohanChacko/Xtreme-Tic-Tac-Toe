@@ -91,6 +91,7 @@ class MinimaxAgent(object):
             zobhash = self.computeZobHash(self.board.big_boards_status)
             if zobhash in self.transposition_table:
                 state_score = self.transposition_table[zobhash]
+                print("I've used here.")
             else:
                 state_score = self.evaluate_heuristic(self.board)
                 self.transposition_table[zobhash] = state_score
@@ -98,7 +99,7 @@ class MinimaxAgent(object):
 
         if is_maximizing_player:
             best_heuristic_val = -1 * sys.maxint
-            available_moves = deepcopy(self.board.find_valid_move_cells(old_move))
+            available_moves = self.board.find_valid_move_cells(old_move)
             for current_move in available_moves:
                 # self.board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = self.player
                 self.board.update(old_move, current_move, self.player)
@@ -122,7 +123,7 @@ class MinimaxAgent(object):
 
         else:
             best_heuristic_val = sys.maxint
-            available_moves = deepcopy(self.board.find_valid_move_cells(old_move))
+            available_moves = self.board.find_valid_move_cells(old_move)
             for current_move in available_moves:
 
 
@@ -156,7 +157,7 @@ class MinimaxAgent(object):
         is_player_max = True
         best_move_val = -1 *  sys.maxint
         best_move = (-1,-1,-1)
-        available_moves = deepcopy(self.board.find_valid_move_cells(old_move))
+        available_moves = self.board.find_valid_move_cells(old_move)
 
         if len(available_moves) == 1:
             return available_moves[0]

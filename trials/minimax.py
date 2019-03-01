@@ -11,12 +11,34 @@ class MinimaxAgent(object):
         self.INIT_BETA      = sys.maxint
         self.board          = None
 
-        # self.corner_strategic_positions = [ 
-        #                         (0, 0, 0) , (0, 0, 1) , (0, 1, 0) , (0, 1, 1),
-        #                         (0, 0, 7) , (0, 0, 8) , (0, 1, 7) , (0, 1, 8),
-        #                         (0, 7, 0) , (0, 7, 1) , (0, 8, 0) , (0, 8, 1),
-        #                         (0, 7, 7) , (0, 7, 8) , (0, 8, 7) , (0, 8, 8),
-        #                         ]
+        self.small_board_weights = [
+            [
+                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10,  8,  0,     0,  0,  0,      0,  8, 10,],
+                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+
+                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 0,  0,  0,     0,  0,  0,      0,  0,  0,],
+                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+
+                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [10,  8,  0,     6,  0,  6,      0,  8, 10,],
+                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+            ],
+            [
+                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10,  8,  0,     0,  0,  0,      0,  8, 10,],
+                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+
+                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 0,  0,  0,     0,  0,  0,      0,  0,  0,],
+                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+
+                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [10,  8,  0,     6,  0,  6,      0,  8, 10,],
+                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+            ]
+        ]
 
 
         if player == 'x':
@@ -160,165 +182,9 @@ class MinimaxAgent(object):
 
         # The Special Positions of the Small Board of the Big Board Positions
         for k in range(2):
-            for i in range(0,9,3):
-                for j in range(0,9,3):
-                    # if self.board.big_boards_status[k][i+1][j+1] == self.player:
-                    #     state_score += 10
-
-                    # Top Left Block
-                    if i == 0 and j == 0:
-
-                        # f x -
-                        # x - -
-                        # - - -
-                        if self.board.big_boards_status[k][i][j+1] == self.player:
-                            state_score += 10
-                        if self.board.big_boards_status[k][i+1][j] == self.player:
-                            state_score += 10
-
-                        # Center block of top left
-                        if self.board.big_boards_status[k][i+1][j+1] == self.player:
-                            state_score += 10
-
-                        # Favourable Corner
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 8
-
-                    # Top Center Block
-                    if i == 0 and j == 3:
-
-                        # x - x
-                        # - - -
-                        # x - x
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 6
-                        pass
-
-                    # Top Right Block
-                    if i == 0 and j == 6:
-
-                        # - x f
-                        # - - x
-                        # - - -
-                        if self.board.big_boards_status[k][i][j+1] == self.player:
-                            state_score += 10
-                        if self.board.big_boards_status[k][i+1][j+2] == self.player:
-                            state_score += 10
-                        
-                        # Center block of top right
-                        if self.board.big_boards_status[k][i+1][j+1] == self.player:
-                            state_score += 10
-
-                        # Favourable Corner
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 8
-
-                    # Center Left Block
-                    if i == 3 and j == 0:
-
-                        # x - x
-                        # - - -
-                        # x - x
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 6
-                        pass
-
-                    # Center Center Block
-                    if i == 3 and j == 3:
-
-                        # x - x
-                        # - - -
-                        # x - x
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 6
-                        pass
-
-                    # Center Right Block
-                    if i == 3 and j == 6:
-
-                        # x - x
-                        # - - -
-                        # x - x
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 6
-                        pass
-
-                    # Bottom Left Block
-                    if i == 6 and j == 0:
-
-                        # - - -
-                        # x - -
-                        # f x -
-                        if self.board.big_boards_status[k][i+1][j] == self.player:
-                            state_score += 10
-                        if self.board.big_boards_status[k][i+2][j+1] == self.player:
-                            state_score += 10
-
-                        # Center block of bottom left
-                        if self.board.big_boards_status[k][i+1][j+1] == self.player:
-                            state_score += 10
-
-                        # Favourable Corner
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 8
-
-                    # Bottom Center Block
-                    if i == 6 and j == 3:
-
-                        # x - x
-                        # - - -
-                        # x - x
-                        if self.board.big_boards_status[k][i][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i][j+2] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j] == self.player:
-                            state_score += 6
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 6
-                        pass
-
-                    # Bottom Right Block
-                    if i == 6 and j == 6:
-
-                        # - - -
-                        # - - x
-                        # - x f
-                        if self.board.big_boards_status[k][i+1][j+2] == self.player:
-                            state_score += 10
-                        if self.board.big_boards_status[k][i+2][j+1] == self.player:
-                            state_score += 10
-
-                        # Center block of bottom right
-                        if self.board.big_boards_status[k][i+1][j+1] == self.player:
-                            state_score += 10
-
-                        # Favourable Corner
-                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
-                            state_score += 8
+            for i in range(9):
+                for j in range(9):
+                    if self.board.big_boards_status[k][i][j] == self.player:
+                        state_score += self.small_board_weights[k][i][j]
 
         return state_score

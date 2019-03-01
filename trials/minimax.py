@@ -1,7 +1,7 @@
 import sys
 from copy import deepcopy
 import random
-import time 
+import time
 
 class MinimaxAgent(object):
     def __init__(self, player):
@@ -53,18 +53,47 @@ class MinimaxAgent(object):
             ]
         ]
 
+        self.transposition_table = {}
+        self.zobristboard = []
+
+        # Populating the Zobrist Hash Table
+        for k in range(0,2):
+            self.zobristboard.append([])
+            for i in range(0,9):
+                self.zobristboard[k].append([])
+                for j in range(0,9):
+                    self.zobristboard[k][i].append( [random.randint(1, 2**64 - 1) for l in range(2)] )
 
         if player == 'x':
             self.opponent = 'o'
         else:
             self.opponent = 'x'
 
+    def computeZobHash(self, board):
+
+        hash = 0
+
+        for k in range(0,2):
+            for i in range(0,9):
+                for j in range(0,9):
+                    if board[k][i][j] == 'x':
+                        hash ^= self.zobristboard[k][i][j][0]
+                    elif board[k][i][j] == 'o':
+                        hash ^= self.zobristboard[k][i][j][1]
+        return str(hash)
+
     def minimax(self, depth, old_move, is_maximizing_player, alpha, beta):
-        
+
         board_copy = deepcopy(self.board)
 
         if depth == 0 or self.board.find_terminal_state() != ('CONTINUE', '-'):
-            state_score = self.evaluate_heuristic(self.board)
+
+            zobhash = self.computeZobHash(self.board.big_boards_status)
+            if zobhash in self.transposition_table:
+                state_score = self.transposition_table[zobhash]
+            else:
+                state_score = self.evaluate_heuristic(self.board)
+                self.transposition_table[zobhash] = state_score
             return state_score
 
         if is_maximizing_player:
@@ -132,8 +161,8 @@ class MinimaxAgent(object):
         if len(available_moves) == 1:
             return available_moves[0]
 
-        
-        
+
+
         for current_move in available_moves:
 
             # print(str(current_move))
@@ -165,7 +194,7 @@ class MinimaxAgent(object):
         return best_move
 
     def evaluate_heuristic(self, board):
-        
+
         state_score = 0
 
         #################################### Heuristic A ####################################

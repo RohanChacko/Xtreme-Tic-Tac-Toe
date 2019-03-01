@@ -101,7 +101,7 @@ class MinimaxAgent(object):
         
         for current_move in available_moves:
 
-            print(str(current_move))
+            # print(str(current_move))
 
             # Max Player Made His Move
             board_copy = deepcopy(self.board)
@@ -186,6 +186,18 @@ class MinimaxAgent(object):
 
                     # Top Center Block
                     if i == 0 and j == 3:
+
+                        # x - x
+                        # - - -
+                        # x - x
+                        if self.board.big_boards_status[k][i][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i][j+2] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
+                            state_score += 6
                         pass
 
                     # Top Right Block
@@ -209,12 +221,50 @@ class MinimaxAgent(object):
 
                     # Center Left Block
                     if i == 3 and j == 0:
+
+                        # x - x
+                        # - - -
+                        # x - x
+                        if self.board.big_boards_status[k][i][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i][j+2] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
+                            state_score += 6
                         pass
+
                     # Center Center Block
                     if i == 3 and j == 3:
+
+                        # x - x
+                        # - - -
+                        # x - x
+                        if self.board.big_boards_status[k][i][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i][j+2] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
+                            state_score += 6
                         pass
+
                     # Center Right Block
                     if i == 3 and j == 6:
+
+                        # x - x
+                        # - - -
+                        # x - x
+                        if self.board.big_boards_status[k][i][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i][j+2] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
+                            state_score += 6
                         pass
 
                     # Bottom Left Block
@@ -238,6 +288,18 @@ class MinimaxAgent(object):
 
                     # Bottom Center Block
                     if i == 6 and j == 3:
+
+                        # x - x
+                        # - - -
+                        # x - x
+                        if self.board.big_boards_status[k][i][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i][j+2] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j] == self.player:
+                            state_score += 6
+                        if self.board.big_boards_status[k][i+2][j+2] == self.player:
+                            state_score += 6
                         pass
 
                     # Bottom Right Block

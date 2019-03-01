@@ -36,7 +36,14 @@ class Random_Player():
 		#You have to implement the move function with the same signature as this
 		#Find the list of valid cells allowed
 		cells = board.find_valid_move_cells(old_move)
-		return cells[random.randrange(len(cells))]
+		
+		# Debug Code
+		m = cells[random.randrange(len(cells))]
+		print flag + str(m)
+		return m
+		# Debug Code Ends
+		
+		# return cells[random.randrange(len(cells))]
 
 class Manual_Player:
 	def __init__(self):
@@ -370,10 +377,11 @@ if __name__ == '__main__':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
 	elif option == '3':
+		# obj1 = Random_Player()
 		obj1 = MinimaxAgent('x')
-		obj2 = MinimaxAgent('o')
-		# obj1 = Manual_Player()
-		# obj2 = Manual_Player()
+		# obj2 = MinimaxAgent('o')
+		obj2 = Random_Player()
+
 	elif option == '4':
 		obj1 = MinimaxAgent()
 		obj2 = Random_Player()

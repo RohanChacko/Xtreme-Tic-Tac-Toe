@@ -13,43 +13,43 @@ class MinimaxAgent(object):
 
         self.small_board_weights = [
             [
-                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10, 10,  0,     7,  0,  7,      0, 10, 10,],
                 [10,  8,  0,     0,  0,  0,      0,  8, 10,],
-                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [ 0,  0,  0,     7,  0,  7,      0,  0,  0,],
 
-                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 7,  0,  7,     7,  0,  7,      7,  0,  7,],
                 [ 0,  0,  0,     0,  0,  0,      0,  0,  0,],
-                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 7,  0,  7,     7,  0,  7,      7,  0,  7,],
 
-                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [ 0,  0,  0,     7,  0,  7,      0,  0,  0,],
                 [10,  8,  0,     0,  0,  0,      0,  8, 10,],
-                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10, 10,  0,     7,  0,  7,      0, 10, 10,],
             ],
             [
-                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10, 10,  0,     7,  0,  7,      0, 10, 10,],
                 [10,  8,  0,     0,  0,  0,      0,  8, 10,],
-                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [ 0,  0,  0,     7,  0,  7,      0,  0,  0,],
 
-                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 7,  0,  7,     7,  0,  7,      7,  0,  7,],
                 [ 0,  0,  0,     0,  0,  0,      0,  0,  0,],
-                [ 6,  0,  6,     6,  0,  6,      6,  0,  6,],
+                [ 7,  0,  7,     7,  0,  7,      7,  0,  7,],
 
-                [ 0,  0,  0,     6,  0,  6,      0,  0,  0,],
+                [ 0,  0,  0,     7,  0,  7,      0,  0,  0,],
                 [10,  8,  0,     0,  0,  0,      0,  8, 10,],
-                [10, 10,  0,     6,  0,  6,      0, 10, 10,],
+                [10, 10,  0,     7,  0,  7,      0, 10, 10,],
             ],
         ]
 
         self.small_board_status_weights = [
             [
-                [20, 15, 20,],
-                [15, 15, 15,],
-                [20, 15, 20,],
+                [20, 20, 20,],
+                [20, 20, 20,],
+                [20, 20, 20,],
             ],
             [
-                [20, 15, 20,],
-                [15, 15, 15,],
-                [20, 15, 20,],
+                [20, 20, 20,],
+                [20, 20, 20,],
+                [20, 20, 20,],
             ]
         ]
 
@@ -91,9 +91,9 @@ class MinimaxAgent(object):
             zobhash = self.computeZobHash(self.board.big_boards_status)
             if zobhash in self.transposition_table:
                 state_score = self.transposition_table[zobhash]
-                print("I've used here.")
+
             else:
-                state_score = self.evaluate_heuristic(self.board)
+                state_score = self.evaluate_heuristic(self.board, old_move)
                 self.transposition_table[zobhash] = state_score
             return state_score
 
@@ -147,10 +147,6 @@ class MinimaxAgent(object):
 
             return best_heuristic_val
 
-
-
-
-
     def move(self, board, old_move, flag):
 
         self.board = deepcopy(board)
@@ -161,8 +157,6 @@ class MinimaxAgent(object):
 
         if len(available_moves) == 1:
             return available_moves[0]
-
-
 
         for current_move in available_moves:
 
@@ -194,7 +188,7 @@ class MinimaxAgent(object):
         print self.player + str(best_move)
         return best_move
 
-    def evaluate_heuristic(self, board):
+    def evaluate_heuristic(self, board, old_move):
 
         state_score = 0
 
@@ -219,8 +213,9 @@ class MinimaxAgent(object):
             for i in range(3):
                 for j in range(3):
                     if self.board.small_boards_status[k][i][j] == self.player:
-                        state_score += self.small_board_status_weights[k][i][j]
-
+                        state_score += 5*self.small_board_status_weights[k][i][j]
+                    if self.board.small_boards_status[k][i][j] == self.opponent:
+                        state_score -= self.small_board_status_weights[k][i][j]
         #################################### Heuristic C ####################################
 
         # The Special Positions of the Small Board of the Big Board Positions
@@ -229,5 +224,17 @@ class MinimaxAgent(object):
                 for j in range(9):
                     if self.board.big_boards_status[k][i][j] == self.player:
                         state_score += self.small_board_weights[k][i][j]
+
+
+        #################################### Heuristic D ####################################
+
+        # Possibility of making a winning position
+		# for k in range(2):
+		# 	if self.board.small_boards_status[k][old_move[0]][old_move[1]] == "-":
+		# 		for i in range(3*old_move[0], 3*old_move[0]+3):
+		# 			for j in range(3*old_move[1], 3*old_move[1]+3):
+
+
+
 
         return state_score

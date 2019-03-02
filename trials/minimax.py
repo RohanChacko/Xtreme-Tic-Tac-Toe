@@ -2,16 +2,24 @@ import sys
 from copy import deepcopy
 import random
 import time
+from multiprocessing import Process
 
 class MinimaxAgent(object):
     def __init__(self, player):
-        self.player         = player
-        self.MAX_DEPTH      = 3
-        self.INIT_ALPHA     = -1*sys.maxint
-        self.INIT_BETA      = sys.maxint
-        self.board          = None
+        self.player                 = player
+        self.MIN_DEPTH              = 3
+        self.MAX_DEPTH              = 8
+        self.INIT_ALPHA             = -1*sys.maxint
+        self.INIT_BETA              = sys.maxint
+        self.TIME_LIMIT             = 20
+        self.TIME_ELAPSED           = 0
+        self.board                  = None
+        self.best_move              = (-1,-1,-1)
+        self.best_move_val          = -1 *  sys.maxint
+        self.transposition_table    = {}
+        self.zobristboard           = []
 
-        self.small_board_weights = [
+        self.small_board_weights    = [
             [
                 [10, 10,  0,     7,  0,  7,      0, 10, 10,],
                 [10,  8,  0,     0,  0,  0,      0,  8, 10,],
@@ -52,9 +60,7 @@ class MinimaxAgent(object):
                 [20, 20, 20,],
             ]
         ]
-
-        self.transposition_table = {}
-        self.zobristboard = []
+        
 
         # Populating the Zobrist Hash Table
         for k in range(0,2):
@@ -105,6 +111,13 @@ class MinimaxAgent(object):
                 self.board.update(old_move, current_move, self.player)
 
                 allowed_small_board = [current_move[1]%3, current_move[2]%3]
+
+                current_time = time.time()
+                # print current_time - self.TIME_ELAPSED 
+                # print str(depth) + " " + str(current_time - self.TIME_ELAPSED) 
+                if current_time - self.TIME_ELAPSED > self.TIME_LIMIT:
+                    return best_heuristic_val
+
                 if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
                     value = self.minimax(depth-1, current_move, True, alpha, beta)
                 else:
@@ -132,6 +145,14 @@ class MinimaxAgent(object):
 
 
                 allowed_small_board = [current_move[1]%3, current_move[2]%3]
+
+                current_time = time.time()
+                # print current_time - self.TIME_ELAPSED 
+                # print str(depth) + " " + str(current_time - self.TIME_ELAPSED) 
+                if current_time - self.TIME_ELAPSED > self.TIME_LIMIT:
+                    return best_heuristic_val
+
+
                 if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
                     value = self.minimax(depth-1, current_move, False, alpha, beta)
                 else:
@@ -147,46 +168,91 @@ class MinimaxAgent(object):
 
             return best_heuristic_val
 
+    def IDS(self, available_moves, old_move, is_player_max):
+        # print "Came into IDS"
+
+        for depth in range(self.MIN_DEPTH, self.MAX_DEPTH):
+            # print "Doing depth " + str(depth)
+
+            for current_move in available_moves:
+
+                # Max Player Made His Move
+                board_copy = deepcopy(self.board)
+                self.board.update(old_move, current_move, self.player)
+
+                allowed_small_board = [current_move[1]%3, current_move[2]%3]
+
+                current_time = time.time()
+                # print str(depth) + " " + str(current_time - self.TIME_ELAPSED) 
+                if current_time - self.TIME_ELAPSED > self.TIME_LIMIT:
+                    return
+
+                # Get the value of the move the max player made
+                if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
+                    move_value = self.minimax(depth, current_move, is_player_max, self.INIT_ALPHA, self.INIT_BETA)
+                else:
+                    move_value = self.minimax(depth, current_move, not is_player_max, self.INIT_ALPHA, self.INIT_BETA)
+
+                # Undo the move
+                self.board = deepcopy(board_copy)
+
+                # Update the best move value and best move depending on if the player is Max or Min
+                if move_value > self.best_move_val:
+                    self.best_move = current_move
+                    self.best_move_val = move_value
+
+
     def move(self, board, old_move, flag):
 
         self.board = deepcopy(board)
+        self.TIME_ELAPSED = time.time()
         is_player_max = True
-        best_move_val = -1 *  sys.maxint
-        best_move = (-1,-1,-1)
+        self.best_move_val = -1 *  sys.maxint
+        self.best_move = (-1,-1,-1)
         available_moves = self.board.find_valid_move_cells(old_move)
 
         if len(available_moves) == 1:
             return available_moves[0]
 
-        for current_move in available_moves:
+        
+        # Some Issue: Timeout not Happening After the Required Number of Seconds In the case of MultiProcessing
 
-            # print(str(current_move))
+        # action_process = Process(target=self.IDS(available_moves, old_move, is_player_max))
+        # action_process.start()
+        # action_process.join(1)
 
-            # Max Player Made His Move
-            board_copy = deepcopy(self.board)
-            self.board.update(old_move, current_move, self.player)
-            # copy_board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = self.player
+        # if action_process.is_alive():
+        #     print "Its still running time to kill"
+        #     action_process.terminate()
+        #     action_process.join()
 
-            allowed_small_board = [current_move[1]%3, current_move[2]%3]
+        self.IDS(available_moves, old_move, is_player_max)
 
-            # Get the value of the move the max player made
-            if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
-                move_value = self.minimax(self.MAX_DEPTH, current_move, is_player_max, self.INIT_ALPHA, self.INIT_BETA)
-            else:
-                move_value = self.minimax(self.MAX_DEPTH, current_move, not is_player_max, self.INIT_ALPHA, self.INIT_BETA)
+        # for current_move in available_moves:
 
-            # Undo the move
-            self.board = deepcopy(board_copy)
-            # copy_board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = '-'
+        #     # Max Player Made His Move
+        #     board_copy = deepcopy(self.board)
+        #     self.board.update(old_move, current_move, self.player)
 
-            # Update the best move value and best move depending on if the player is Max or Min
-            if move_value > best_move_val:
-                best_move = current_move
-                best_move_val = move_value
+        #     allowed_small_board = [current_move[1]%3, current_move[2]%3]
+
+        #     # Get the value of the move the max player made
+        #     if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
+        #         move_value = self.minimax(self.MAX_DEPTH, current_move, is_player_max, self.INIT_ALPHA, self.INIT_BETA)
+        #     else:
+        #         move_value = self.minimax(self.MAX_DEPTH, current_move, not is_player_max, self.INIT_ALPHA, self.INIT_BETA)
+
+        #     # Undo the move
+        #     self.board = deepcopy(board_copy)
+
+        #     # Update the best move value and best move depending on if the player is Max or Min
+        #     if move_value > self.self.best_move_val:
+        #         self.best_move = current_move
+        #         self.best_move_val = move_value
 
 
-        print self.player + str(best_move)
-        return best_move
+        print self.player + str(self.best_move)
+        return self.best_move
 
     def evaluate_heuristic(self, board, old_move):
 
@@ -195,13 +261,17 @@ class MinimaxAgent(object):
         #################################### Heuristic A ####################################
 
         if board.find_terminal_state() == ('x','WON') and self.player == 'x':
-            state_score += 100
+            state_score += sys.maxint
+            return state_score
         elif  board.find_terminal_state() == ('o','WON') and self.player == 'o':
-            state_score += 100
+            state_score += sys.maxint
+            return state_score
         elif board.find_terminal_state() == ('x','WON') and self.player == 'o':
-            state_score -= 100
+            state_score -= sys.maxint
+            return state_score
         elif board.find_terminal_state() == ('o','WON') and self.player == 'x':
-            state_score -= 100
+            state_score -= sys.maxint
+            return state_score
 
 
         #################################### Heuristic B ####################################

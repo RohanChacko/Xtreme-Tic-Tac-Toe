@@ -18,6 +18,7 @@ import copy
 import traceback
 from minimax import MinimaxAgent
 from end24 import Team1657
+from bot import Bot
 
 TIME = 50
 MAX_PTS = 86
@@ -379,9 +380,8 @@ if __name__ == '__main__':
 		obj2 = Manual_Player()
 	elif option == '3':
 		# obj1 = Random_Player()
-		# obj1 = MinimaxAgent('x')
-		obj1 = Team1657()
-		obj2 = Team1657()
+		obj1 = MinimaxAgent('x')
+		obj2 = MinimaxAgent('o')
 		# obj2 = Random_Player()
 
 	elif option == '4':

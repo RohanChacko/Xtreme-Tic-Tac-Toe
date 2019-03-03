@@ -7,8 +7,8 @@ from multiprocessing import Process
 class MinimaxAgent(object):
     def __init__(self, player):
         self.player                 = player
-        self.MIN_DEPTH              = 3
-        self.MAX_DEPTH              = 8
+        self.MIN_DEPTH              = 1
+        self.MAX_DEPTH              = 6
         self.INIT_ALPHA             = -1*sys.maxint
         self.INIT_BETA              = sys.maxint
         self.TIME_LIMIT             = 20
@@ -19,47 +19,47 @@ class MinimaxAgent(object):
         self.transposition_table    = {}
         self.zobristboard           = []
 
-        self.small_board_weights    = [
-            [
-                [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
-                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
-                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
-
-                [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
-                [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
-                [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
-
-                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
-                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
-                [9 , 10,  9,     8,  7,  8,      9, 10,  9,],
-            ],
-            [
-                [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
-                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
-                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
-
-                [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
-                [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
-                [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
-
-                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
-                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
-                [9 , 10,  9,     8,  7,  8,      9, 10,  9,],
-            ],
-        ]
-
-        self.small_board_status_weights = [
-            [
-                [20, 15, 20,],
-                [15, 20, 15,],
-                [20, 15, 20,],
-            ],
-            [
-                [15, 20, 15,],
-                [20, 15, 20,],
-                [15, 20, 15,],
-            ]
-        ]
+        # self.small_board_weights    = [
+        #     [
+        #         [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
+        #         [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+        #         [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
+        #
+        #         [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
+        #         [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
+        #         [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
+        #
+        #         [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
+        #         [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+        #         [9 , 10,  9,     8,  7,  8,      9, 10,  9,],
+        #     ],
+        #     [
+        #         [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
+        #         [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+        #         [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
+        #
+        #         [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
+        #         [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
+        #         [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
+        #
+        #         [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
+        #         [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+        #         [9 , 10,  9,     8,  7,  8,      9, 10,  9,],
+        #     ],
+        # ]
+        #
+        # self.small_board_status_weights = [
+        #     [
+        #         [20, 15, 20,],
+        #         [15, 20, 15,],
+        #         [20, 15, 20,],
+        #     ],
+        #     [
+        #         [15, 20, 15,],
+        #         [20, 15, 20,],
+        #         [15, 20, 15,],
+        #     ]
+        # ]
 
 
         # Populating the Zobrist Hash Table
@@ -182,7 +182,7 @@ class MinimaxAgent(object):
             if zobhash in self.transposition_table:
                 state_score = self.transposition_table[zobhash]
             else:
-                state_score = self.evaluate_heuristic(self.board, old_move, depth)
+                state_score = self.evaluate_heuristic(self.board, old_move, depth, is_maximizing_player)
                 self.transposition_table[zobhash] = state_score
             return state_score
 
@@ -226,7 +226,7 @@ class MinimaxAgent(object):
             for current_move in available_moves:
 
                 self.update(current_move, self.opponent, 1)
-                
+
                 allowed_small_board = [current_move[1]%3, current_move[2]%3]
 
                 current_time = time.time()
@@ -252,7 +252,7 @@ class MinimaxAgent(object):
         # print "Came into IDS"
 
         for depth in range(self.MIN_DEPTH, self.MAX_DEPTH):
-            # print "Doing depth " + str(depth)
+            print "Doing depth " + str(depth)
 
             for current_move in available_moves:
 
@@ -306,7 +306,7 @@ class MinimaxAgent(object):
         print self.player + str(self.best_move)
         return self.best_move
 
-    def evaluate_heuristic(self, board, old_move, depth):
+    def evaluate_heuristic(self, board, old_move, depth, is_maximizing_player):
 
         state_score = 0
 
@@ -321,26 +321,25 @@ class MinimaxAgent(object):
 
         #################################### Heuristic B ####################################
 
-        # The Small Board Representations of the Big Board
-        # Heuristic for winning Small Board
-        # Have to still decide on a score for winning, as in what priority to give
-        for k in range(2):
-            for i in range(3):
-                for j in range(3):
-                    if self.board.small_boards_status[k][i][j] == self.player:
-                        state_score += (sys.maxint/100 )#+ self.small_board_status_weights[k][i][j])
-                    if self.board.small_boards_status[k][i][j] == self.opponent:
-                        state_score -= (sys.maxint/1000 )#+ self.small_board_status_weights[k][i][j])
+        state_score += self.heur_b()
         #################################### Heuristic C ####################################
 
         # Small Board position weights
-        for k in range(2):
-            for i in range(9):
-                for j in range(9):
-                    if self.board.big_boards_status[k][i][j] == self.player:
-                        state_score += self.small_board_weights[k][i][j]
+        # for k in range(2):
+        #     for i in range(9):
+        #         for j in range(9):
+        #             if self.board.big_boards_status[k][i][j] == self.player:
+        #                 state_score += self.small_board_weights[k][i][j]
 
+        state_score += self.evaluate_big_board()
 
+        if self.board.small_boards_status[0][old_move[1]%3][old_move[2]%3] != '-' and self.board.small_boards_status[1][old_move[1]%3][old_move[2]%3] != '-':
+            
+            if is_maximizing_player:
+                state_score += 1000
+            else:
+                state_score -= 1000
+        
         return state_score
 
 
@@ -375,3 +374,114 @@ class MinimaxAgent(object):
                 avail.append(move)
 
         return avail
+
+
+    def heur_b(self):
+        # The Small Board Representations of the Big Board
+        # Heuristic for winning Small Board
+        # Have to still decide on a score for winning, as in what priority to give
+        count = 0
+        for k in range(2):
+            for i in range(3):
+                for j in range(3):
+                    if self.board.small_boards_status[k][i][j] == self.player:
+                        count += 35
+                    if self.board.small_boards_status[k][i][j] == self.opponent:
+                        count -= 35
+
+        for k in range(0,2):
+
+            count += 75 * self.eval_smallboard(k, 'x')
+            count -= 50 * self.eval_smallboard(k, 'o')
+
+        return count
+
+    def eval_smallboard(self, board_num, player):
+
+        count = 0
+        board = [
+                [1, 1, 1,],
+                [1, 1, 1,],
+                [1, 1, 1,],
+            ]
+        bs = self.board.small_boards_status[board_num]
+        for i in range(0,3):
+            for j in range(0,3):
+
+                if bs[i][j] == '-':
+                    board[i][j] = 0
+                elif bs[i][j] != player:
+                    board[i][j] = -1
+
+
+        for i in range(0,3):
+            # Horizontal winning pattern
+            if board[i][0] + board[i][1] + board[i][2] == 2:
+                count+=1
+
+            # Horizontal blocking pattern
+            if board[i][0] + board[i][1] + board[i][2] == -1:
+                count+=1
+
+            # Vertical winning pattern
+            if board[0][i] + board[1][i] + board[2][i] == 2:
+                count+=1
+
+            # Vertical blocking pattern
+            if board[0][i] + board[1][i] + board[2][i] == -1:
+                count+=1
+
+        # Diagnol winning pattern
+        if board[0][0] + board[1][1] + board[2][2] == 2:
+            count+=1
+
+        # Diagnol winning pattern
+        if board[0][2] + board[1][1] + board[2][0] == 2:
+            count+=1
+
+        # Diagnol blocking pattern
+        if board[0][0] + board[1][1] + board[2][2] == -1:
+            count+=1
+
+        # Diagnol blocking pattern
+        if board[0][2] + board[1][1] + board[2][0] == -1:
+            count+=1
+
+        return count
+
+    def evaluate_big_board(self):
+
+        player_adv_pos_count = self.get_big_board_advantage_positions(self.player)
+        opponent_adv_pos_count = self.get_big_board_advantage_positions(self.opponent)
+
+        return player_adv_pos_count - opponent_adv_pos_count
+
+    def get_big_board_advantage_positions(self, flg):
+        advantange_pos_count = 0
+        big_board_weight = ([[1 for i in range(9)] for j in range(9)], [[1 for i in range(9)] for j in range(9)])
+        for k in range(2):
+            for i in range(9):
+                for j in range(9):
+                    if self.board.big_boards_status[k][i][j] == '-':
+                        big_board_weight[k][i][j] = 0
+                    elif  self.board.big_boards_status[k][i][j] != flg:
+                        big_board_weight[k][i][j] = -1
+
+        for k in range(2):
+            for i in range(0,9,3):
+                for j in range(0,9,3):
+                    for l in range(3):
+                        if big_board_weight[k][i+l][j] +  big_board_weight[k][i+l][j+1] + big_board_weight[k][i+l][j+2] == 2:
+                            advantange_pos_count += 1
+                        if big_board_weight[k][i+l][j] +  big_board_weight[k][i+l][j+1] + big_board_weight[k][i+l][j+2] == -1:
+                            advantange_pos_count += 1
+                        if big_board_weight[k][i][j+l] +  big_board_weight[k][i+1][j+l] + big_board_weight[k][i+2][j+l] == 2:
+                            advantange_pos_count += 1
+                        if big_board_weight[k][i][j+l] +  big_board_weight[k][i+1][j+l] + big_board_weight[k][i+2][j+l] == -1:
+                            advantange_pos_count += 1
+                    if big_board_weight[k][i][j] + big_board_weight[k][i+1][j+1] + big_board_weight[k][i+2][j+2] == 2:
+                        advantange_pos_count += 1
+                    if big_board_weight[k][i][j+2] + big_board_weight[k][i+1][j+1] + big_board_weight[k][i+2][j] == 2:
+                        advantange_pos_count += 1
+
+        return advantange_pos_count

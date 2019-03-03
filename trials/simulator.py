@@ -17,8 +17,9 @@ import time
 import copy
 import traceback
 from minimax import MinimaxAgent
+from end24 import Team1657
 
-TIME = 24
+TIME = 50
 MAX_PTS = 86
 
 class TimedOutExc(Exception):
@@ -378,8 +379,9 @@ if __name__ == '__main__':
 		obj2 = Manual_Player()
 	elif option == '3':
 		# obj1 = Random_Player()
-		obj1 = MinimaxAgent('x')
-		obj2 = MinimaxAgent('o')
+		# obj1 = MinimaxAgent('x')
+		obj1 = Team1657()
+		obj2 = Team1657()
 		# obj2 = Random_Player()
 
 	elif option == '4':

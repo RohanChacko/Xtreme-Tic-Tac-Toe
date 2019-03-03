@@ -21,9 +21,9 @@ class MinimaxAgent(object):
 
         self.small_board_weights    = [
             [
-                [9, 10, 9,     8,  7,  8,      9, 10,  9,],
-                [10,10, 7,     7,  8,  7,      7, 10, 10,],
-                [9, 7,  9,     8,  7,  8,      9,  7,  9,],
+                [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
+                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
 
                 [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
                 [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
@@ -34,9 +34,9 @@ class MinimaxAgent(object):
                 [9 , 10,  9,     8,  7,  8,      9, 10,  9,],
             ],
             [
-                [9, 10, 9,     8,  7,  8,      9, 10,  9,],
-                [10,10, 7,     7,  8,  7,      7, 10, 10,],
-                [9, 7,  9,     8,  7,  8,      9,  7,  9,],
+                [ 9, 10,  9,     8,  7,  8,      9, 10,  9,],
+                [10, 10,  7,     7,  8,  7,      7, 10, 10,],
+                [ 9,  7,  9,     8,  7,  8,      9,  7,  9,],
 
                 [ 8,  7,  8,     8,  7,  8,      8,  7,  8,],
                 [ 7,  8,  7,     7,  8,  7,      7,  8,  7,],
@@ -175,7 +175,6 @@ class MinimaxAgent(object):
 
     def minimax(self, depth, old_move, is_maximizing_player, alpha, beta):
 
-        # board_copy = deepcopy(self.board)
 
         if depth == 0 or self.board.find_terminal_state() != ('CONTINUE', '-'):
 
@@ -183,30 +182,24 @@ class MinimaxAgent(object):
             if zobhash in self.transposition_table:
                 state_score = self.transposition_table[zobhash]
             else:
-                state_score = self.evaluate_heuristic(self.board, old_move)
+                state_score = self.evaluate_heuristic(self.board, old_move, depth)
                 self.transposition_table[zobhash] = state_score
             return state_score
 
         if is_maximizing_player:
             best_heuristic_val = -1 * sys.maxint
             available_moves = self.board.find_valid_move_cells(old_move)
-            if len(available_moves) > 18 and self.num_moves > 0:
-                available_moves = self.open_move_heuristic(available_moves)
+            # if len(available_moves) > 18 and self.num_moves > 0:
+            #     available_moves = self.open_move_heuristic(available_moves)
 
 
             for current_move in available_moves:
-                # self.board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = self.player
-                # print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
-                # print '-------------------------------------------'
-                # print self.board.print_board()
 
                 self.update(current_move, self.player, 1)
 
                 allowed_small_board = [current_move[1]%3, current_move[2]%3]
 
                 current_time = time.time()
-                # print current_time - self.TIME_ELAPSED
-                # print str(depth) + " " + str(current_time - self.TIME_ELAPSED)
                 if current_time - self.TIME_ELAPSED > self.TIME_LIMIT:
                     return best_heuristic_val
 
@@ -221,37 +214,22 @@ class MinimaxAgent(object):
                 if beta <= alpha:
                     break
 
-                # self.board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = '-'
-                # print self.board.print_board()
-                # print '-------------------------------------------'
-                # print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
-                # print
-                # print
-
             return best_heuristic_val
 
 
         else:
             best_heuristic_val = sys.maxint
             available_moves = self.board.find_valid_move_cells(old_move)
-            if len(available_moves) > 18 and self.num_moves > 0:
-                available_moves = self.open_move_heuristic(available_moves)
+            # if len(available_moves) > 18 and self.num_moves > 0:
+            #     available_moves = self.open_move_heuristic(available_moves)
 
             for current_move in available_moves:
 
-                # print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
-                # print '-------------------------------------------'
-                # print self.board.print_board()
-
-
-                # copy_board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = self.opponent
                 self.update(current_move, self.opponent, 1)
                 
                 allowed_small_board = [current_move[1]%3, current_move[2]%3]
 
                 current_time = time.time()
-                # print current_time - self.TIME_ELAPSED
-                # print str(depth) + " " + str(current_time - self.TIME_ELAPSED)
                 if current_time - self.TIME_ELAPSED > self.TIME_LIMIT:
                     return best_heuristic_val
 
@@ -267,8 +245,6 @@ class MinimaxAgent(object):
 
                 if alpha <= beta:
                     break
-
-                # copy_board.big_boards_status[current_move[0]][current_move[1]][current_move[2]] = '-'
 
             return best_heuristic_val
 
@@ -321,58 +297,25 @@ class MinimaxAgent(object):
         if len(available_moves) == 1:
             return available_moves[0]
 
-        if len(available_moves) > 18 and self.num_moves > 0:
-            available_moves = self.open_move_heuristic(available_moves)
-
-
-        # Some Issue: Timeout not Happening After the Required Number of Seconds In the case of MultiProcessing
-        # action_process = Process(target=self.IDS(available_moves, old_move, is_player_max))
-        # action_process.start()
-        # action_process.join(1)
-
-        # if action_process.is_alive():
-        #     print "Its still running time to kill"
-        #     action_process.terminate()
-        #     action_process.join()
+        # if len(available_moves) > 18 and self.num_moves > 0:
+        #     available_moves = self.open_move_heuristic(available_moves)
 
         self.IDS(available_moves, old_move, is_player_max)
-
-        # for current_move in available_moves:
-
-        #     # Max Player Made His Move
-        #     board_copy = deepcopy(self.board)
-        #     self.board.update(old_move, current_move, self.player)
-
-        #     allowed_small_board = [current_move[1]%3, current_move[2]%3]
-
-        #     # Get the value of the move the max player made
-        #     if self.board.small_boards_status[0][allowed_small_board[0]][allowed_small_board[1]] != '-' and self.board.small_boards_status[1][allowed_small_board[0]][allowed_small_board[1]] != '-':
-        #         move_value = self.minimax(self.MAX_DEPTH, current_move, is_player_max, self.INIT_ALPHA, self.INIT_BETA)
-        #     else:
-        #         move_value = self.minimax(self.MAX_DEPTH, current_move, not is_player_max, self.INIT_ALPHA, self.INIT_BETA)
-
-        #     # Undo the move
-        #     self.board = deepcopy(board_copy)
-
-        #     # Update the best move value and best move depending on if the player is Max or Min
-        #     if move_value > self.self.best_move_val:
-        #         self.best_move = current_move
-        #         self.best_move_val = move_value
 
         self.num_moves +=1
         print self.player + str(self.best_move)
         return self.best_move
 
-    def evaluate_heuristic(self, board, old_move):
+    def evaluate_heuristic(self, board, old_move, depth):
 
         state_score = 0
 
         #################################### Heuristic A ####################################
 
         if board.find_terminal_state() == (self.player,'WON'):
-            return sys.maxint
+            return sys.maxint + depth
         elif  board.find_terminal_state() == (self.opponent,'WON'):
-            return -1*sys.maxint
+            return -1*sys.maxint - depth
         else:
             pass
 
@@ -385,9 +328,9 @@ class MinimaxAgent(object):
             for i in range(3):
                 for j in range(3):
                     if self.board.small_boards_status[k][i][j] == self.player:
-                        state_score += self.small_board_status_weights[k][i][j]
+                        state_score += (sys.maxint/100 )#+ self.small_board_status_weights[k][i][j])
                     if self.board.small_boards_status[k][i][j] == self.opponent:
-                        state_score -= self.small_board_status_weights[k][i][j]
+                        state_score -= (sys.maxint/1000 )#+ self.small_board_status_weights[k][i][j])
         #################################### Heuristic C ####################################
 
         # Small Board position weights
@@ -431,6 +374,4 @@ class MinimaxAgent(object):
             if [move[0], move[1]%3, move[2]%3] == self.good_board_1 or [move[0], move[1]%3, move[2]%3] == self.good_board_2:
                 avail.append(move)
 
-        # print self.good_board_1
-        # print self.good_board_2
         return avail
